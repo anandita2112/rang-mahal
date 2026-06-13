@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rang Mahal — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--saffron:#E8651A;--maroon:#6B1E2E;--gold:#C9952A;--ivory:#FAF3E8;--bg:#F5F0E8;--dark:#1A0A00;--muted:#8B6B4A;--border:#DEC89A;--green:#2D7A4F;--red:#C0392B;--sw:240px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);display:flex;min-height:100vh;}
+
+/* LOGIN */
+.login{position:fixed;inset:0;background:linear-gradient(135deg,var(--maroon),#1A0A00);display:flex;align-items:center;justify-content:center;z-index:999;}
+.login-box{background:var(--ivory);padding:48px 40px;width:340px;text-align:center;}
+.login-logo{font-family:'Playfair Display',serif;font-size:1.8rem;color:var(--maroon);margin-bottom:2px;}
+.login-sub{font-size:0.62rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:30px;}
+.login-box input{width:100%;padding:12px 14px;border:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:0.85rem;margin-bottom:12px;outline:none;background:white;}
+.login-box input:focus{border-color:var(--maroon);}
+.login-btn{width:100%;background:var(--maroon);color:white;border:none;padding:13px;font-family:'Poppins',sans-serif;font-weight:600;font-size:0.83rem;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.login-btn:hover{background:var(--saffron);}
+.hint{font-size:0.7rem;color:var(--muted);margin-top:10px;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--maroon);min-height:100vh;display:flex;flex-direction:column;position:fixed;left:0;top:0;}
+.sb-logo{padding:22px 18px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sb-logo .brand{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--gold);display:block;}
+.sb-logo .sub{font-size:0.58rem;color:rgba(255,255,255,0.45);letter-spacing:2px;text-transform:uppercase;}
+.sb-nav{flex:1;padding:16px 0;}
+.sb-section{font-size:0.58rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);padding:12px 18px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 18px;color:rgba(255,255,255,0.65);cursor:pointer;transition:all 0.2s;font-size:0.82rem;border-left:3px solid transparent;}
+.nav-item:hover,.nav-item.active{color:white;background:rgba(255,255,255,0.08);border-left-color:var(--gold);}
+.nav-item .ic{font-size:0.95rem;width:18px;text-align:center;}
+.sb-foot{padding:14px 18px;border-top:1px solid rgba(255,255,255,0.1);}
+.logout{display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.45);cursor:pointer;font-size:0.8rem;transition:color 0.2s;}
+.logout:hover{color:white;}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;padding:28px;display:none;}
+.main.active{display:block;}
+.page-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:26px;flex-wrap:wrap;gap:12px;}
+.page-title{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--maroon);}
+.page-sub{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+.actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn{padding:9px 18px;border:none;font-family:'Poppins',sans-serif;font-size:0.76rem;font-weight:600;cursor:pointer;letter-spacing:0.3px;transition:all 0.2s;}
+.btn-primary{background:var(--maroon);color:white;}
+.btn-primary:hover{background:var(--saffron);}
+.btn-danger{background:var(--red);color:white;}
+.btn-sm{padding:5px 12px;font-size:0.7rem;}
+.btn-ghost{background:var(--bg);color:var(--dark);}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px;}
+.stat-card{background:white;border:1px solid var(--border);padding:20px;border-top:3px solid var(--maroon);}
+.stat-card:nth-child(2){border-top-color:var(--saffron);}
+.stat-card:nth-child(3){border-top-color:var(--gold);}
+.stat-card:nth-child(4){border-top-color:var(--green);}
+.stat-lbl{font-size:0.65rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:7px;}
+.stat-val{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--dark);font-weight:700;line-height:1;}
+.stat-ch{font-size:0.7rem;color:var(--green);margin-top:5px;font-weight:500;}
+
+/* CARD */
+.card{background:white;border:1px solid var(--border);margin-bottom:22px;}
+.card-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-family:'Playfair Display',serif;font-size:0.98rem;color:var(--maroon);}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;}
+th{background:var(--bg);padding:10px 14px;text-align:left;font-size:0.65rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);}
+td{padding:12px 14px;border-bottom:1px solid rgba(222,200,154,0.3);font-size:0.81rem;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(250,243,232,0.4);}
+.badge{display:inline-block;padding:3px 9px;font-size:0.62rem;font-weight:600;letter-spacing:0.3px;}
+.b-green{background:#E8F5E9;color:#2D7A4F;}
+.b-yellow{background:#FFF8E1;color:#C9952A;}
+.b-red{background:#FFEBEE;color:#C0392B;}
+.b-blue{background:#E3F2FD;color:#1565C0;}
+.b-purple{background:#F3E5F5;color:#6A1B9A;}
+
+/* CHART */
+.chart{padding:22px;display:flex;align-items:flex-end;gap:14px;height:190px;}
+.bar-g{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.bar{width:100%;background:linear-gradient(to top,var(--maroon),var(--saffron));min-height:4px;}
+.bar-l{font-size:0.62rem;color:var(--muted);}
+.bar-v{font-size:0.67rem;font-weight:600;color:var(--maroon);}
+
+/* CAT BREAKDOWN */
+.cat-breakdown{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:18px;}
+.cat-item{background:var(--bg);border:1px solid var(--border);padding:14px;text-align:center;}
+.cat-item .icon{font-size:1.8rem;margin-bottom:6px;}
+.cat-item .name{font-size:0.72rem;color:var(--maroon);font-weight:600;margin-bottom:2px;}
+.cat-item .count{font-size:0.65rem;color:var(--muted);}
+.cat-item .rev{font-size:0.8rem;font-weight:700;color:var(--dark);margin-top:4px;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:22px;}
+.form-full{grid-column:1/-1;}
+.form-group label{display:block;font-size:0.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:0.83rem;outline:none;background:white;transition:border-color 0.2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--maroon);}
+.form-group textarea{resize:vertical;min-height:80px;}
+.form-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:10px;}
+
+/* SEARCH */
+.tbl-search{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;gap:10px;}
+.tbl-search input{flex:1;padding:9px 13px;border:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:0.8rem;outline:none;}
+.tbl-search input:focus{border-color:var(--maroon);}
+.tbl-search select{padding:9px 13px;border:1.5px solid var(--border);font-family:'Poppins',sans-serif;font-size:0.8rem;outline:none;background:white;}
+
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:22px;}
+.setting-item{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg);border:1px solid var(--border);}
+.setting-label{font-size:0.82rem;font-weight:500;}
+.setting-sub{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+.toggle{width:42px;height:22px;background:#ccc;border-radius:11px;cursor:pointer;position:relative;transition:background 0.2s;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;background:white;border-radius:50%;transition:left 0.2s;}
+.toggle.on::after{left:22px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--maroon);color:white;padding:11px 18px;font-size:0.8rem;z-index:999;transform:translateY(80px);opacity:0;transition:all 0.3s;border-left:3px solid var(--gold);}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* PROD PREVIEW */
+.prod-em{width:34px;height:34px;background:var(--bg);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;vertical-align:middle;margin-right:7px;}
+
+@media(max-width:1100px){.stats{grid-template-columns:1fr 1fr;}.cat-breakdown{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:700px){.stats{grid-template-columns:1fr;}.form-grid{grid-template-columns:1fr;}.settings-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Rang Mahal</div>
+    <div class="login-sub">Admin Panel</div>
+    <input type="text" id="lu" placeholder="Username" value="admin"/>
+    <input type="password" id="lp" placeholder="Password"/>
+    <button class="login-btn" onclick="doLogin()">Login to Dashboard</button>
+    <div class="hint">Demo: admin / rangmahal123</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sb" style="display:none">
+  <div class="sb-logo">
+    <span class="brand">Rang Mahal</span>
+    <span class="sub">Admin Panel</span>
+  </div>
+  <div class="sb-nav">
+    <div class="sb-section">Main</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="ic">📊</span>Dashboard</div>
+    <div class="nav-item" onclick="showPage('products',this)"><span class="ic">🛍️</span>Products</div>
+    <div class="nav-item" onclick="showPage('orders',this)"><span class="ic">📦</span>Orders</div>
+    <div class="nav-item" onclick="showPage('customers',this)"><span class="ic">👥</span>Customers</div>
+    <div class="sb-section">Manage</div>
+    <div class="nav-item" onclick="showPage('addproduct',this)"><span class="ic">➕</span>Add Product</div>
+    <div class="nav-item" onclick="showPage('categories',this)"><span class="ic">🗂️</span>Categories</div>
+    <div class="nav-item" onclick="showPage('settings',this)"><span class="ic">⚙️</span>Settings</div>
+    <div class="sb-section">Store</div>
+    <div class="nav-item" onclick="window.open('index.html','_blank')"><span class="ic">🌐</span>View Store</div>
+  </div>
+  <div class="sb-foot">
+    <div class="logout" onclick="logout()"><span>🚪</span>Logout</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="main active" id="page-dashboard">
+  <div class="page-hd">
+    <div><div class="page-title">Dashboard</div><div class="page-sub">Welcome back! Here's your store at a glance.</div></div>
+    <div class="actions"><button class="btn btn-primary">📥 Export</button></div>
+  </div>
+  <div class="stats">
+    <div class="stat-card"><div class="stat-lbl">Total Revenue</div><div class="stat-val">₹2,84,320</div><div class="stat-ch">↑ 22% this month</div></div>
+    <div class="stat-card"><div class="stat-lbl">Orders Today</div><div class="stat-val">47</div><div class="stat-ch">↑ 12 from yesterday</div></div>
+    <div class="stat-card"><div class="stat-lbl">Total Products</div><div class="stat-val" id="dpCount">25</div><div class="stat-ch">Across 8 categories</div></div>
+    <div class="stat-card"><div class="stat-lbl">Total Customers</div><div class="stat-val">1,847</div><div class="stat-ch">↑ 143 this week</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Revenue — Last 7 Days</span></div>
+    <div class="chart" id="revChart"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Sales by Category</span></div>
+    <div class="cat-breakdown">
+      <div class="cat-item"><div class="icon">💍</div><div class="name">Jewellery</div><div class="count">4 products</div><div class="rev">₹42,800</div></div>
+      <div class="cat-item"><div class="icon">🥻</div><div class="name">Sarees</div><div class="count">3 products</div><div class="rev">₹61,200</div></div>
+      <div class="cat-item"><div class="icon">🏺</div><div class="name">Blue Pottery</div><div class="count">3 products</div><div class="rev">₹38,400</div></div>
+      <div class="cat-item"><div class="icon">👟</div><div class="name">Mojaris</div><div class="count">3 products</div><div class="rev">₹29,600</div></div>
+      <div class="cat-item"><div class="icon">🌶️</div><div class="name">Spices</div><div class="count">3 products</div><div class="rev">₹18,200</div></div>
+      <div class="cat-item"><div class="icon">🖼️</div><div class="name">Art</div><div class="count">3 products</div><div class="rev">₹54,700</div></div>
+      <div class="cat-item"><div class="icon">🧵</div><div class="name">Fabric</div><div class="count">3 products</div><div class="rev">₹22,100</div></div>
+      <div class="cat-item"><div class="icon">🪔</div><div class="name">Home Decor</div><div class="count">3 products</div><div class="rev">₹17,320</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Recent Orders</span><button class="btn btn-primary btn-sm" onclick="showPage('orders',null)">View All</button></div>
+    <table>
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Category</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>#2041</td><td>Priya Sharma</td><td>Sarees & Lehengas</td><td>₹2,499</td><td><span class="badge b-green">Delivered</span></td></tr>
+        <tr><td>#2040</td><td>Rahul Mehta</td><td>Mojaris & Juttis</td><td>₹1,199</td><td><span class="badge b-yellow">Shipped</span></td></tr>
+        <tr><td>#2039</td><td>Sunita Agarwal</td><td>Blue Pottery</td><td>₹1,499</td><td><span class="badge b-yellow">Shipped</span></td></tr>
+        <tr><td>#2038</td><td>Ananya Joshi</td><td>Jewellery</td><td>₹1,299</td><td><span class="badge b-blue">Processing</span></td></tr>
+        <tr><td>#2037</td><td>Rekha Gupta</td><td>Miniature Art</td><td>₹2,499</td><td><span class="badge b-green">Delivered</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="main" id="page-products">
+  <div class="page-hd">
+    <div><div class="page-title">Products</div><div class="page-sub">Manage all 8 categories</div></div>
+    <div class="actions"><button class="btn btn-primary" onclick="showPage('addproduct',null)">+ Add Product</button></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">All Products</span><span id="prodCount" style="font-size:0.73rem;color:var(--muted)"></span></div>
+    <div class="tbl-search">
+      <input type="text" id="prodSearch" placeholder="Search products…" oninput="renderProdTable()"/>
+      <select id="catFilter" onchange="renderProdTable()">
+        <option value="">All Categories</option>
+        <option value="jewellery">💍 Jewellery</option>
+        <option value="saree">🥻 Sarees</option>
+        <option value="pottery">🏺 Blue Pottery</option>
+        <option value="mojari">👟 Mojaris</option>
+        <option value="spices">🌶️ Spices</option>
+        <option value="art">🖼️ Art</option>
+        <option value="fabric">🧵 Fabric</option>
+        <option value="homedecor">🪔 Home Decor</option>
+      </select>
+    </div>
+    <table>
+      <thead><tr><th>Product</th><th>Category</th><th>Price</th><th>MRP</th><th>Discount</th><th>Badge</th><th>Actions</th></tr></thead>
+      <tbody id="prodTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ORDERS -->
+<div class="main" id="page-orders">
+  <div class="page-hd">
+    <div><div class="page-title">Orders</div><div class="page-sub">Track and manage all orders</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">All Orders</span></div>
+    <div class="tbl-search">
+      <input type="text" placeholder="Search by customer or order ID…"/>
+      <select>
+        <option>All Status</option><option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
+      </select>
+    </div>
+    <table>
+      <thead><tr><th>Order ID</th><th>Customer</th><th>City</th><th>Items</th><th>Amount</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="ordersBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- CUSTOMERS -->
+<div class="main" id="page-customers">
+  <div class="page-hd"><div><div class="page-title">Customers</div><div class="page-sub">All registered customers</div></div></div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Customer List</span></div>
+    <table>
+      <thead><tr><th>Name</th><th>City</th><th>Orders</th><th>Total Spent</th><th>Fav Category</th><th>Joined</th></tr></thead>
+      <tbody>
+        <tr><td>Priya Sharma</td><td>Mumbai</td><td>8</td><td>₹14,200</td><td>Sarees</td><td>Nov 2025</td></tr>
+        <tr><td>Sunita Agarwal</td><td>Delhi</td><td>5</td><td>₹7,890</td><td>Blue Pottery</td><td>Jan 2026</td></tr>
+        <tr><td>Rahul Mehta</td><td>Bangalore</td><td>4</td><td>₹6,400</td><td>Mojaris</td><td>Dec 2025</td></tr>
+        <tr><td>Ananya Joshi</td><td>Pune</td><td>11</td><td>₹22,100</td><td>Jewellery</td><td>Oct 2025</td></tr>
+        <tr><td>Rekha Gupta</td><td>Jaipur</td><td>3</td><td>₹8,200</td><td>Miniature Art</td><td>Feb 2026</td></tr>
+        <tr><td>Kavita Singh</td><td>Lucknow</td><td>6</td><td>₹9,800</td><td>Spices</td><td>Jan 2026</td></tr>
+        <tr><td>Meena Rawat</td><td>Agra</td><td>2</td><td>₹3,400</td><td>Fabric</td><td>Mar 2026</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADD PRODUCT -->
+<div class="main" id="page-addproduct">
+  <div class="page-hd"><div><div class="page-title">Add Product</div><div class="page-sub">Add a new product to your store</div></div></div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Product Details</span></div>
+    <div class="form-grid">
+      <div class="form-group form-full"><label>Product Name *</label><input type="text" id="nName" placeholder="e.g. Bandhani Silk Saree"/></div>
+      <div class="form-group"><label>Category *</label>
+        <select id="nCat">
+          <option value="jewellery">💍 Bangles & Jewellery</option>
+          <option value="saree">🥻 Sarees & Lehengas</option>
+          <option value="pottery">🏺 Blue Pottery</option>
+          <option value="mojari">👟 Mojaris & Juttis</option>
+          <option value="spices">🌶️ Spices & Namkeen</option>
+          <option value="art">🖼️ Miniature Art</option>
+          <option value="fabric">🧵 Block Print Fabric</option>
+          <option value="homedecor">🪔 Lac & Home Decor</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Badge</label>
+        <select id="nBadge">
+          <option value="">None</option>
+          <option value="Bestseller">Bestseller</option>
+          <option value="New">New</option>
+          <option value="Trending">Trending</option>
+          <option value="Premium">Premium</option>
+          <option value="Hot">Hot</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Selling Price ₹ *</label><input type="number" id="nPrice" placeholder="499"/></div>
+      <div class="form-group"><label>MRP / Original Price ₹</label><input type="number" id="nOld" placeholder="799"/></div>
+      <div class="form-group"><label>Emoji Icon</label><input type="text" id="nEmoji" placeholder="🥻" maxlength="4"/></div>
+      <div class="form-group"><label>Rating (1–5)</label><input type="number" id="nRating" placeholder="4.8" step="0.1" min="1" max="5"/></div>
+      <div class="form-group form-full"><label>Description</label><textarea id="nDesc" placeholder="Describe this product in detail…"></textarea></div>
+    </div>
+    <div class="form-foot">
+      <button class="btn btn-primary" onclick="addProduct()">✅ Add Product</button>
+      <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="main" id="page-categories">
+  <div class="page-hd"><div><div class="page-title">Categories</div><div class="page-sub">Manage your 8 Jaipur product categories</div></div></div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">All Categories</span></div>
+    <table>
+      <thead><tr><th>Category</th><th>Products</th><th>Revenue</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>💍 Bangles & Jewellery</td><td>4</td><td>₹42,800</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>🥻 Sarees & Lehengas</td><td>3</td><td>₹61,200</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>🏺 Blue Pottery</td><td>3</td><td>₹38,400</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>👟 Mojaris & Juttis</td><td>3</td><td>₹29,600</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>🌶️ Spices & Namkeen</td><td>3</td><td>₹18,200</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>🖼️ Miniature Art</td><td>3</td><td>₹54,700</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>🧵 Block Print Fabric</td><td>3</td><td>₹22,100</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+        <tr><td>🪔 Lac & Home Decor</td><td>3</td><td>₹17,320</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-sm">Edit</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="main" id="page-settings">
+  <div class="page-hd"><div><div class="page-title">Settings</div><div class="page-sub">Configure your store</div></div></div>
+  <div class="card" style="margin-bottom:22px">
+    <div class="card-hd"><span class="card-title">Store Info</span></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Store Name</label><input type="text" value="Rang Mahal"/></div>
+      <div class="form-group"><label>Tagline</label><input type="text" value="The Pink City Store"/></div>
+      <div class="form-group"><label>Contact Email</label><input type="email" value="hello@rangmahal.in"/></div>
+      <div class="form-group"><label>WhatsApp Number</label><input type="text" value="+91 98765 43210"/></div>
+      <div class="form-group"><label>Free Shipping Above (₹)</label><input type="number" value="599"/></div>
+      <div class="form-group"><label>Return Window (Days)</label><input type="number" value="7"/></div>
+    </div>
+    <div class="form-foot"><button class="btn btn-primary">Save Changes</button></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><span class="card-title">Store Features</span></div>
+    <div class="settings-grid">
+      <div class="setting-item"><div><div class="setting-label">COD (Cash on Delivery)</div><div class="setting-sub">Allow customers to pay on delivery</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-item"><div><div class="setting-label">Free Shipping Banner</div><div class="setting-sub">Show topbar free shipping message</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-item"><div><div class="setting-label">Product Reviews</div><div class="setting-sub">Show star ratings on product cards</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-item"><div><div class="setting-label">Wishlist Feature</div><div class="setting-sub">Let customers save products</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-item"><div><div class="setting-label">Newsletter Signup</div><div class="setting-sub">Show email subscription section</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-item"><div><div class="setting-label">Maintenance Mode</div><div class="setting-sub">Take store offline temporarily</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let products=[
+  {id:1,name:"Gulabi Lac Bangle Set",cat:"jewellery",price:449,old:699,emoji:"🟤",badge:"Bestseller",stars:4.9,reviews:128},
+  {id:2,name:"Kundan Stone Bangle",cat:"jewellery",price:799,old:1199,emoji:"✨",badge:"Premium",stars:4.9,reviews:77},
+  {id:3,name:"Meenakari Jhumkas",cat:"jewellery",price:649,old:999,emoji:"💛",badge:"Trending",stars:4.8,reviews:91},
+  {id:4,name:"Bridal Lac Set",cat:"jewellery",price:1299,old:1999,emoji:"👰",badge:"Premium",stars:5.0,reviews:43},
+  {id:5,name:"Bandhani Silk Saree",cat:"saree",price:2499,old:3499,emoji:"🥻",badge:"Bestseller",stars:4.9,reviews:64},
+  {id:6,name:"Leheriya Georgette Saree",cat:"saree",price:1799,old:2499,emoji:"🌊",badge:"New",stars:4.7,reviews:38},
+  {id:7,name:"Gota Patti Lehenga",cat:"saree",price:4999,old:7999,emoji:"👗",badge:"Premium",stars:5.0,reviews:22},
+  {id:8,name:"Blue Pottery Flower Vase",cat:"pottery",price:899,old:1299,emoji:"🏺",badge:"Bestseller",stars:4.8,reviews:112},
+  {id:9,name:"Blue Pottery Chai Set",cat:"pottery",price:1499,old:1999,emoji:"☕",badge:"Trending",stars:4.9,reviews:67},
+  {id:10,name:"Blue Pottery Wall Plate",cat:"pottery",price:699,old:999,emoji:"🔵",badge:"New",stars:4.7,reviews:44},
+  {id:11,name:"Classic Gold Mojari (Men)",cat:"mojari",price:1199,old:1799,emoji:"👞",badge:"Bestseller",stars:4.8,reviews:89},
+  {id:12,name:"Embroidered Jutti (Women)",cat:"mojari",price:999,old:1499,emoji:"👠",badge:"Trending",stars:4.9,reviews:103},
+  {id:13,name:"Bridal Mojari Set (Pair)",cat:"mojari",price:2499,old:3499,emoji:"💑",badge:"Premium",stars:5.0,reviews:31},
+  {id:14,name:"Lal Maas Masala Mix",cat:"spices",price:299,old:449,emoji:"🌶️",badge:"Bestseller",stars:4.9,reviews:156},
+  {id:15,name:"Rajasthani Namkeen Box",cat:"spices",price:449,old:599,emoji:"🥜",badge:"Trending",stars:4.8,reviews:88},
+  {id:16,name:"Ker Sangri Pickle",cat:"spices",price:349,old:499,emoji:"🫙",badge:"New",stars:4.7,reviews:52},
+  {id:17,name:"Miniature Elephant Painting",cat:"art",price:1499,old:2199,emoji:"🐘",badge:"Bestseller",stars:4.9,reviews:74},
+  {id:18,name:"Rajasthani Village Scene",cat:"art",price:2499,old:3499,emoji:"🖼️",badge:"Premium",stars:5.0,reviews:29},
+  {id:19,name:"Peacock Miniature on Marble",cat:"art",price:3499,old:4999,emoji:"🦚",badge:"Trending",stars:4.9,reviews:18},
+  {id:20,name:"Sanganeri Block Print Fabric",cat:"fabric",price:799,old:1199,emoji:"🧵",badge:"Bestseller",stars:4.8,reviews:93},
+  {id:21,name:"Bagru Natural Dye Fabric",cat:"fabric",price:649,old:899,emoji:"🍂",badge:"New",stars:4.7,reviews:41},
+  {id:22,name:"Dabu Print Dupatta",cat:"fabric",price:549,old:799,emoji:"🧣",badge:"Trending",stars:4.8,reviews:67},
+  {id:23,name:"Lac Lacquered Photo Frame",cat:"homedecor",price:599,old:899,emoji:"🪞",badge:"Bestseller",stars:4.8,reviews:82},
+  {id:24,name:"Rajasthani Diya Set",cat:"homedecor",price:349,old:499,emoji:"🪔",badge:"Trending",stars:4.9,reviews:118},
+  {id:25,name:"Carved Wooden Wall Panel",cat:"homedecor",price:2999,old:4499,emoji:"🌳",badge:"Premium",stars:5.0,reviews:24},
+];
+
+let orders=[
+  {id:'#2041',customer:'Priya Sharma',city:'Mumbai',items:'Bandhani Silk Saree',amount:2499,date:'13 Jun 2026',status:'Delivered'},
+  {id:'#2040',customer:'Rahul Mehta',city:'Bangalore',items:'Classic Gold Mojari',amount:1199,date:'13 Jun 2026',status:'Shipped'},
+  {id:'#2039',customer:'Sunita Agarwal',city:'Delhi',items:'Blue Pottery Chai Set',amount:1499,date:'12 Jun 2026',status:'Shipped'},
+  {id:'#2038',customer:'Ananya Joshi',city:'Pune',items:'Bridal Lac Set',amount:1299,date:'12 Jun 2026',status:'Processing'},
+  {id:'#2037',customer:'Rekha Gupta',city:'Jaipur',items:'Rajasthani Village Scene',amount:2499,date:'11 Jun 2026',status:'Delivered'},
+  {id:'#2036',customer:'Meena Rawat',city:'Lucknow',items:'Lal Maas Masala Mix',amount:299,date:'11 Jun 2026',status:'Delivered'},
+  {id:'#2035',customer:'Kavita Singh',city:'Agra',items:'Peacock Miniature on Marble',amount:3499,date:'10 Jun 2026',status:'Processing'},
+];
+
+function doLogin(){
+  if(document.getElementById('lu').value==='admin'&&document.getElementById('lp').value==='rangmahal123'){
+    document.getElementById('loginScreen').style.display='none';
+    document.getElementById('sb').style.display='flex';
+    document.querySelectorAll('.main').forEach(m=>{m.style.display='none';m.classList.remove('active');});
+    document.getElementById('page-dashboard').style.display='block';
+    document.getElementById('page-dashboard').classList.add('active');
+    initDash();
+  } else showToast('Wrong credentials! Try admin / rangmahal123');
+}
+
+function logout(){document.getElementById('loginScreen').style.display='flex';document.getElementById('sb').style.display='none';document.getElementById('lp').value='';}
+
+function showPage(name,el){
+  document.querySelectorAll('.main').forEach(m=>{m.style.display='none';m.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const p=document.getElementById('page-'+name);
+  if(p){p.style.display='block';p.classList.add('active');}
+  if(el)el.classList.add('active');
+  if(name==='products')renderProdTable();
+  if(name==='orders')renderOrders();
+  if(name==='dashboard')initDash();
+}
+
+function initDash(){
+  document.getElementById('dpCount').textContent=products.length;
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const vals=[18200,24400,19800,31600,22200,38400,28800];
+  const max=Math.max(...vals);
+  document.getElementById('revChart').innerHTML=days.map((d,i)=>`
+    <div class="bar-g">
+      <div class="bar-v">₹${(vals[i]/1000).toFixed(1)}k</div>
+      <div class="bar" style="height:${(vals[i]/max)*140}px"></div>
+      <div class="bar-l">${d}</div>
+    </div>
+  `).join('');
+}
+
+function renderProdTable(){
+  const q=(document.getElementById('prodSearch')?.value||'').toLowerCase();
+  const cf=document.getElementById('catFilter')?.value||'';
+  const list=products.filter(p=>{
+    const mq=!q||p.name.toLowerCase().includes(q);
+    const mc=!cf||p.cat===cf;
+    return mq&&mc;
+  });
+  document.getElementById('prodCount').textContent=`${list.length} products`;
+  const disc=p=>Math.round((1-p.price/p.old)*100);
+  document.getElementById('prodTableBody').innerHTML=list.map(p=>`
+    <tr>
+      <td><span class="prod-em">${p.emoji}</span><strong>${p.name}</strong></td>
+      <td><span class="badge b-blue">${p.cat}</span></td>
+      <td style="font-weight:700;color:var(--maroon)">₹${p.price}</td>
+      <td style="text-decoration:line-through;color:var(--muted)">₹${p.old}</td>
+      <td><span class="badge b-green">${disc(p)}% off</span></td>
+      <td>${p.badge?`<span class="badge b-yellow">${p.badge}</span>`:'—'}</td>
+      <td>
+        <button class="btn btn-ghost btn-sm" style="margin-right:6px" onclick="editProd(${p.id})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="delProd(${p.id})">Del</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderOrders(){
+  const sc={Delivered:'b-green',Shipped:'b-yellow',Processing:'b-blue',Cancelled:'b-red'};
+  document.getElementById('ordersBody').innerHTML=orders.map(o=>`
+    <tr>
+      <td style="font-weight:700">${o.id}</td>
+      <td>${o.customer}</td>
+      <td>${o.city}</td>
+      <td>${o.items}</td>
+      <td style="font-weight:700;color:var(--maroon)">₹${o.amount.toLocaleString()}</td>
+      <td style="color:var(--muted)">${o.date}</td>
+      <td><span class="badge ${sc[o.status]}">${o.status}</span></td>
+      <td>
+        <select onchange="updStatus('${o.id}',this.value)" style="padding:4px 8px;border:1px solid var(--border);font-size:0.73rem;font-family:Poppins,sans-serif">
+          <option>Processing</option><option>Shipped</option><option>Delivered</option><option>Cancelled</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function updStatus(id,status){const o=orders.find(x=>x.id===id);if(o){o.status=status;showToast(`Order ${id} → ${status}`);renderOrders();}}
+
+function addProduct(){
+  const name=document.getElementById('nName').value.trim();
+  const price=parseInt(document.getElementById('nPrice').value);
+  if(!name||!price){showToast('⚠️ Name and Price are required!');return;}
+  products.push({id:Date.now(),name,cat:document.getElementById('nCat').value,price,old:parseInt(document.getElementById('nOld').value)||price,emoji:document.getElementById('nEmoji').value||'🛍️',badge:document.getElementById('nBadge').value,stars:parseFloat(document.getElementById('nRating').value)||4.5,reviews:0});
+  showToast(`✅ "${name}" added!`);
+  clearForm();
+  document.getElementById('dpCount').textContent=products.length;
+}
+
+function clearForm(){['nName','nPrice','nOld','nEmoji','nRating','nDesc'].forEach(id=>document.getElementById(id).value='');}
+
+function delProd(id){if(!confirm('Delete this product?'))return;products=products.filter(p=>p.id!==id);renderProdTable();showToast('Product deleted');}
+
+function editProd(id){
+  const p=products.find(x=>x.id===id);
+  showPage('addproduct',null);
+  document.getElementById('nName').value=p.name;
+  document.getElementById('nPrice').value=p.price;
+  document.getElementById('nOld').value=p.old;
+  document.getElementById('nEmoji').value=p.emoji;
+  document.getElementById('nRating').value=p.stars;
+  document.getElementById('nCat').value=p.cat;
+  document.getElementById('nBadge').value=p.badge||'';
+  showToast('Editing product…');
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginScreen').style.display!=='none')doLogin();});
+</script>
+</body>
+</html>
